@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Attendance System - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .card-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: opacity 0.3s ease;
+        }
+
+        .card-button:hover {
+            opacity: 0.9;
+        }
+
+        .stats {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .stats h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 AI Attendance System</h1>
+            <p>Face Recognition Based Smart Attendance</p>
+        </div>
+
+        <div class="cards">
+            <div class="card">
+                <div class="card-icon">👤</div>
+                <h2>Register Student</h2>
+                <p>Add new students to the system and capture their face images for training the AI model.</p>
+                <a href="/register" class="card-button">Register Now</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📸</div>
+                <h2>Mark Attendance</h2>
+                <p>Use facial recognition to automatically mark student attendance in real-time.</p>
+                <a href="/attendance" class="card-button">Mark Attendance</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📊</div>
+                <h2>View Reports</h2>
+                <p>Access detailed attendance reports, statistics, and analytics for all students.</p>
+                <a href="/reports" class="card-button">View Reports</a>
+            </div>
+        </div>
+
+        <div class="stats">
+            <h2>System Overview</h2>
+            <div class="stat-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalStudents">0</div>
+                    <div class="stat-label">Registered Students</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="todayAttendance">0</div>
+                    <div class="stat-label">Present Today</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="avgAttendance">0%</div>
+                    <div class="stat-label">Average Attendance</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load statistics
+        async function loadStats() {
+            try {
+                // Get registered students
+                const studentsRes = await fetch('/api/students');
+                const studentsData = await studentsRes.json();
+                document.getElementById('totalStudents').textContent = studentsData.length;
+
+                // Get attendance stats
+                const statsRes = await fetch('/api/attendance-stats');
+                const statsData = await statsRes.json();
+                
+                if (statsData.stats.students) {
+                    const today = new Date().toISOString().split('T')[0];
+                    const todayRes = await fetch(`/api/attendance-report?start_date=${today}&end_date=${today}`);
+                    const todayData = await todayRes.json();
+                    document.getElementById('todayAttendance').textContent = todayData.records.length;
+
+                    // Calculate average attendance
+                    const avgRate = statsData.stats.students.reduce((sum, s) => sum + s.attendance_rate, 0) / statsData.stats.students.length;
+                    document.getElementById('avgAttendance').textContent = avgRate ? avgRate.toFixed(1) + '%' : '0%';
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        loadStats();
+    </script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# Flask
+instance/
+.webassets-cache
+
+# Data directories (local data - don't commit)
+backend/dataset/
+backend/trainer/
+backend/attendance/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+*.bak
+
+# Logs
+*.log
+
+# Environment variables
+.env
+.env.local
+
+# Test files
+test/
+tests/
+
+# Coverage
+.coverage
+htmlcov/

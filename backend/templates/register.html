@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Student - AI Attendance System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-width: 640px;
+            margin: 0 auto 20px;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        video {
+            width: 100%;
+            display: block;
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            text-align: center;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .progress {
+            text-align: center;
+            font-size: 1.2em;
+            color: #667eea;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .instructions {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .instructions h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .instructions ul {
+            margin-left: 20px;
+            color: #666;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Back to Dashboard</a>
+        
+        <div class="header">
+            <h1>👤 Register New Student</h1>
+            <p>Capture face images for training the AI model</p>
+        </div>
+
+        <div class="card">
+            <div class="instructions">
+                <h3>📋 Instructions</h3>
+                <ul>
+                    <li>Enter the student's name</li>
+                    <li>Click "Start Camera" to begin</li>
+                    <li>Position your face in the center</li>
+                    <li>Click "Capture Image" multiple times (recommended: 30+ images)</li>
+                    <li>Try different angles and expressions</li>
+                    <li>Click "Train Model" when done</li>
+                </ul>
+            </div>
+
+            <div class="form-group">
+                <label for="studentName">Student Name</label>
+                <input type="text" id="studentName" placeholder="Enter full name" />
+            </div>
+
+            <div id="statusMessage"></div>
+            <div id="progressInfo" class="progress"></div>
+
+            <div class="video-container" id="videoContainer" style="display: none;">
+                <video id="video" autoplay></video>
+                <canvas id="overlay" class="video-overlay"></canvas>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" id="startCameraBtn" onclick="startCamera()">Start Camera</button>
+                <button class="btn-secondary" id="stopCameraBtn" onclick="stopCamera()" style="display: none;">Stop Camera</button>
+                <button class="btn-primary" id="captureBtn" onclick="captureImage()" disabled>Capture Image</button>
+                <button class="btn-success" id="trainBtn" onclick="trainModel()" disabled>Train Model</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let video = document.getElementById('video');
+        let canvas = document.getElementById('overlay');
+        let ctx = canvas.getContext('2d');
+        let stream = null;
+        let captureCount = 0;
+        let studentName = '';
+
+        async function startCamera() {
+            studentName = document.getElementById('studentName').value.trim();
+            
+            if (!studentName) {
+                showStatus('Please enter student name', 'error');
+                return;
+            }
+
+            try {
+                // Register student
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({name: studentName})
+                });
+
+                const data = await response.json();
+                if (!data.success) {
+                    showStatus(data.message, 'error');
+                    return;
+                }
+
+                // Start camera
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { width: 640, height: 480 } 
+                });
+                video.srcObject = stream;
+
+                // Setup canvas
+                canvas.width = 640;
+                canvas.height = 480;
+
+                document.getElementById('videoContainer').style.display = 'block';
+                document.getElementById('startCameraBtn').style.display = 'none';
+                document.getElementById('stopCameraBtn').style.display = 'inline-block';
+                document.getElementById('captureBtn').disabled = false;
+                document.getElementById('studentName').disabled = true;
+
+                showStatus('Camera started! Position your face and capture images', 'success');
+                updateProgress();
+
+            } catch (error) {
+                showStatus('Error accessing camera: ' + error.message, 'error');
+            }
+        }
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+                stream = null;
+            }
+
+            document.getElementById('videoContainer').style.display = 'none';
+            document.getElementById('startCameraBtn').style.display = 'inline-block';
+            document.getElementById('stopCameraBtn').style.display = 'none';
+            document.getElementById('captureBtn').disabled = true;
+            document.getElementById('studentName').disabled = false;
+        }
+
+        async function captureImage() {
+            if (!stream) return;
+
+            // Capture frame
+            const captureCanvas = document.createElement('canvas');
+            captureCanvas.width = 640;
+            captureCanvas.height = 480;
+            const captureCtx = captureCanvas.getContext('2d');
+            captureCtx.drawImage(video, 0, 0);
+
+            // Convert to base64
+            const imageData = captureCanvas.toDataURL('image/jpeg');
+
+            try {
+                const response = await fetch(`/api/capture/${studentName}`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({image: imageData})
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    captureCount = data.count;
+                    showStatus(data.message, 'success');
+                    updateProgress();
+
+                    // Enable train button after 10 images
+                    if (captureCount >= 10) {
+                        document.getElementById('trainBtn').disabled = false;
+                    }
+
+                    // Flash effect
+                    canvas.style.background = 'rgba(255, 255, 255, 0.5)';
+                    setTimeout(() => {
+                        canvas.style.background = 'transparent';
+                    }, 100);
+                } else {
+                    showStatus(data.message, 'error');
+                }
+            } catch (error) {
+                showStatus('Error capturing image: ' + error.message, 'error');
+            }
+        }
+
+        async function trainModel() {
+            showStatus('Training model... Please wait', 'info');
+            document.getElementById('trainBtn').disabled = true;
+
+            try {
+                const response = await fetch('/api/train', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'}
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showStatus(data.message + ' - Ready to mark attendance!', 'success');
+                    
+                    // Reset
+                    setTimeout(() => {
+                        stopCamera();
+                        captureCount = 0;
+                        document.getElementById('studentName').value = '';
+                        updateProgress();
+                        document.getElementById('trainBtn').disabled = true;
+                    }, 2000);
+                } else {
+                    showStatus(data.message, 'error');
+                    document.getElementById('trainBtn').disabled = false;
+                }
+            } catch (error) {
+                showStatus('Error training model: ' + error.message, 'error');
+                document.getElementById('trainBtn').disabled = false;
+            }
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.className = `status ${type}`;
+            statusDiv.textContent = message;
+            statusDiv.style.display = 'block';
+        }
+
+        function updateProgress() {
+            const progressDiv = document.getElementById('progressInfo');
+            if (captureCount > 0) {
+                progressDiv.textContent = `Images Captured: ${captureCount} (Recommended: 30+)`;
+            } else {
+                progressDiv.textContent = '';
+            }
+        }
+    </script>
+</body>
+</html>

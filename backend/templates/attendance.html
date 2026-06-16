@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mark Attendance - AI Attendance System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        video {
+            width: 100%;
+            display: block;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            text-align: center;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .attendance-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .attendance-list h3 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .student-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+
+        .student-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .student-time {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .instructions {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .instructions p {
+            color: #666;
+            margin: 0;
+            font-size: 0.95em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Back to Dashboard</a>
+        
+        <div class="header">
+            <h1>📸 Mark Attendance</h1>
+            <p>Automated attendance with facial recognition</p>
+        </div>
+
+        <div class="main-grid">
+            <div class="card">
+                <div class="instructions">
+                    <p>📌 Position your face in front of the camera and click "Mark Attendance". The system will automatically detect and mark attendance for recognized students.</p>
+                </div>
+
+                <div id="permissionHelp" class="status info" style="display:none;margin-top:10px;">
+                    Camera permission appears to be denied. Please allow camera access in your browser settings (click the lock icon near the address bar), or open the app at <strong>http://127.0.0.1:5000</strong> and grant permission when prompted. If using a LAN IP, some browsers require HTTPS.
+                </div>
+
+                <div id="statusMessage"></div>
+
+                <div class="video-container" id="videoContainer" style="display: none;">
+                    <video id="video" autoplay></video>
+                </div>
+
+                <div class="button-group">
+                    <label for="videoSource" style="align-self:center;color:#333">Camera:</label>
+                    <select id="videoSource" style="padding:8px;border-radius:6px;margin-right:8px;"> <option value="">Default</option> </select>
+                    <button class="btn-primary" id="startCameraBtn" onclick="startCamera()">Start Camera</button>
+                    <button class="btn-secondary" id="stopCameraBtn" onclick="stopCamera()" style="display: none;">Stop Camera</button>
+                    <button class="btn-success" id="markBtn" onclick="markAttendance()" disabled>Mark Attendance</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="attendance-list">
+                    <h3>✅ Today's Attendance</h3>
+                    <div id="attendanceList">
+                        <div class="empty-state">
+                            <div>📝</div>
+                            <p>No attendance marked yet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let video = document.getElementById('video');
+        let stream = null;
+
+        // Polyfill for getUserMedia and enumerateDevices
+        function getUserMediaPoly(constraints) {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                return navigator.mediaDevices.getUserMedia(constraints);
+            }
+            const getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+            if (getUserMedia) {
+                return new Promise((resolve, reject) => {
+                    getUserMedia.call(navigator, constraints, resolve, reject);
+                });
+            }
+            return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
+        }
+
+        function enumerateDevicesPoly() {
+            if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+                return navigator.mediaDevices.enumerateDevices();
+            }
+            return Promise.resolve([]);
+        }
+
+        async function getVideoDevices() {
+            try {
+                const devices = await enumerateDevicesPoly();
+                const videoSelect = document.getElementById('videoSource');
+                videoSelect.innerHTML = '<option value="">Default</option>';
+                devices.forEach(device => {
+                    if (device.kind === 'videoinput') {
+                        const option = document.createElement('option');
+                        option.value = device.deviceId || '';
+                        option.text = device.label || `Camera ${videoSelect.length+1}`;
+                        videoSelect.appendChild(option);
+                    }
+                });
+            } catch (err) {
+                console.warn('Could not list devices:', err);
+            }
+        }
+
+        async function startCamera() {
+            try {
+                // Check permission state (best-effort; may be unsupported in some browsers)
+                try { await checkCameraPermission(); } catch(e) { /* ignore */ }
+                const videoSelect = document.getElementById('videoSource');
+                const deviceId = videoSelect.value || undefined;
+                const constraints = { video: { width: 640, height: 480 } };
+                if (deviceId) constraints.video.deviceId = { exact: deviceId };
+
+                stream = await getUserMediaPoly(constraints);
+                video.srcObject = stream;
+
+                document.getElementById('videoContainer').style.display = 'block';
+                document.getElementById('startCameraBtn').style.display = 'none';
+                document.getElementById('stopCameraBtn').style.display = 'inline-block';
+                document.getElementById('markBtn').disabled = false;
+
+                showStatus('Camera started! Click "Mark Attendance" to recognize faces', 'success');
+                loadTodayAttendance();
+
+            } catch (error) {
+                let message = error && error.message ? error.message : String(error);
+                // Provide actionable suggestions
+                message += '.\nSuggestions: 1) Allow camera access in your browser. 2) Try opening the app at http://127.0.0.1:5000 (localhost). 3) Close other apps using the camera.';
+                showStatus('Error accessing camera: ' + message, 'error');
+                console.error('getUserMedia error:', error);
+                // If permission denied, show help
+                if (error && (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError')) {
+                    document.getElementById('permissionHelp').style.display = 'block';
+                }
+            }
+        }
+
+        async function checkCameraPermission() {
+            if (!navigator.permissions) return;
+            try {
+                const status = await navigator.permissions.query({ name: 'camera' });
+                if (status.state === 'denied') {
+                    document.getElementById('permissionHelp').style.display = 'block';
+                } else {
+                    document.getElementById('permissionHelp').style.display = 'none';
+                }
+                status.onchange = () => {
+                    if (status.state === 'denied') document.getElementById('permissionHelp').style.display = 'block';
+                    else document.getElementById('permissionHelp').style.display = 'none';
+                };
+            } catch (e) {
+                // Some browsers don't support camera permission name; ignore
+            }
+        }
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+                stream = null;
+            }
+
+            document.getElementById('videoContainer').style.display = 'none';
+            document.getElementById('startCameraBtn').style.display = 'inline-block';
+            document.getElementById('stopCameraBtn').style.display = 'none';
+            document.getElementById('markBtn').disabled = true;
+        }
+
+        async function markAttendance() {
+            if (!stream) return;
+
+            showStatus('Recognizing faces...', 'info');
+            document.getElementById('markBtn').disabled = true;
+
+            // Capture frame
+            const canvas = document.createElement('canvas');
+            canvas.width = 640;
+            canvas.height = 480;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0);
+
+            // Convert to base64
+            const imageData = canvas.toDataURL('image/jpeg');
+
+            try {
+                const response = await fetch('/api/mark-attendance', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({image: imageData})
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (data.marked.length > 0) {
+                        showStatus(`Attendance marked for: ${data.marked.join(', ')}`, 'success');
+                        loadTodayAttendance();
+                    } else {
+                        showStatus('All detected students already marked present', 'info');
+                    }
+                } else {
+                    showStatus(data.message, 'error');
+                }
+            } catch (error) {
+                showStatus('Error marking attendance: ' + error.message, 'error');
+            }
+
+            setTimeout(() => {
+                document.getElementById('markBtn').disabled = false;
+            }, 1000);
+        }
+
+        async function loadTodayAttendance() {
+            const today = new Date().toISOString().split('T')[0];
+            
+            try {
+                const response = await fetch(`/api/attendance-report?start_date=${today}&end_date=${today}`);
+                const data = await response.json();
+
+                const listDiv = document.getElementById('attendanceList');
+                
+                if (data.records && data.records.length > 0) {
+                    listDiv.innerHTML = data.records.map(record => `
+                        <div class="student-item">
+                            <div class="student-name">👤 ${record.Name}</div>
+                            <div class="student-time">🕐 ${record.Time}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    listDiv.innerHTML = `
+                        <div class="empty-state">
+                            <div>📝</div>
+                            <p>No attendance marked yet</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading attendance:', error);
+            }
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.className = `status ${type}`;
+            statusDiv.textContent = message;
+            statusDiv.style.display = 'block';
+        }
+
+        // Load attendance on page load
+        loadTodayAttendance();
+        getVideoDevices();
+        setInterval(loadTodayAttendance, 30000); // Refresh every 30 seconds
+    </script>
+</body>
+</html>
