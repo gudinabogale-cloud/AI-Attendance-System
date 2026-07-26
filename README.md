@@ -211,17 +211,15 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed for educational and office
 
 ## 👨‍💻 Author
 
-Created with ❤️ using Python, Flask, and OpenCV
+Created by Gudina B.
 
-## 🙏 Acknowledgments
+using Python, Flask, and OpenCV
 
-- OpenCV for computer vision capabilities
-- Flask for the web framework
-- The Python community for amazing libraries
+
 
 ## 📞 Support
 
